@@ -73,6 +73,7 @@ function loginUser(req, res){
             bcrypt.compare(password, user.password, (err, check)=>{
                 if(check){
                     //devolver datos de usuario
+                    user.password = undefined;
                     return res.status(200).send({user})
                 }
                 else{
