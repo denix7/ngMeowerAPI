@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var app = express();
 
 //cargar rutas
+var user_routes = require('./routes/user');
 
 //cargar middlewares
 app.use(bodyParser.urlencoded({extended: false}));
@@ -12,13 +13,7 @@ app.use(bodyParser.json());
 
 //configurar CORS y cabeceras
 
-//configurar rutas base
-app.get('/pruebas', (req, res)=>{
-    res.status(200).send({message: 'Pruebas servidor'});
-});
-
-app.get('/', (req, res)=>{
-    res.status(200).send({message: 'Pruebas servidor Home'});
-});
+//rutas
+app.use('/api', user_routes);
 
 module.exports = app;
