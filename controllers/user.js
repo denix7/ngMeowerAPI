@@ -53,14 +53,42 @@ function saveUser(req, res){
                 });
             }
         });
-        
+
     }else{
         res.status(200).send({message: 'Es necesario enviar todos los campos necesarios'});
     }
 }
 
+function loginUser(req, res){
+    var params = req.body;
+
+    var email = params.email;
+    var password = params.password;
+
+    User.findOne({email: email}, (err, user)=>{
+        if(err){
+            return res.status(500).send({message: 'Error en la peticion'});
+        }
+        else if(user){
+            bcrypt.compare(password, user.password, (err, check)=>{
+                if(check){
+                    //devolver datos de usuario
+                    return res.status(200).send({user})
+                }
+                else{
+                    return res.status(404).send({message: 'El usuario no se ha podido identificar'});
+                }
+            });
+        }
+        else{
+            res.status(404).send({message: 'El usuario no existe'});
+        }
+    });
+}
+
 module.exports = {
     home,
     pruebas,
-    saveUser
+    saveUser,
+    loginUser
 }
