@@ -2,7 +2,7 @@
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
 var jwt = require('../services/jwt');
-
+//Pruebas
 function home (req, res){
     res.status(200).send({message: 'Accion user works!'});
 }
@@ -10,7 +10,7 @@ function home (req, res){
 function pruebas (req, res){
     res.status(200).send({message: 'Accion pruebas its works!'});
 }
-
+//Registro
 function saveUser(req, res){
     var user = new User();
     var params = req.body;
@@ -59,7 +59,7 @@ function saveUser(req, res){
         res.status(200).send({message: 'Es necesario enviar todos los campos necesarios'});
     }
 }
-
+//Login 
 function loginUser(req, res){
     var params = req.body;
 
@@ -94,9 +94,27 @@ function loginUser(req, res){
     });
 }
 
+//Listar datos de user
+function getUser(req, res){
+    var userId = req.params.id;
+
+    User.findById(userId, (err, user)=>{
+        if(err){
+            return res.status(500).send({message: 'Error en la peticion'});
+        }
+        else if(!user){
+            res.status(404).send({message: 'El usuario no existe'});
+        }
+        else{
+            res.status(200).send({user});
+        }
+    });
+}
+
 module.exports = {
     home,
     pruebas,
     saveUser,
-    loginUser
+    loginUser,
+    getUser
 }
