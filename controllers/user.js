@@ -1,5 +1,7 @@
 'use strict'
 var bcrypt = require('bcrypt-nodejs');
+var mongoosePaginate = require('mongoose-pagination');
+
 var User = require('../models/user');
 var jwt = require('../services/jwt');
 //Pruebas
@@ -111,10 +113,35 @@ function getUser(req, res){
     });
 }
 
+//Devolver un listado de usuarios paginados
+function getUsers(req, res){
+    var identity_user_id = req.user.sub;//id del user logueado
+
+    var page = 1;
+    if(req.params.page){
+        page = req.params.page;
+    }
+
+    var itemsPerPage = 5;
+
+    User.find().sort('_id').paginate(page, itemsPerPage, (err, users, total)=>{
+        if(err){
+            return res.status(500).send({message: 'Error en la peticion'});
+        }
+        else if(!users){
+            res.status(404).send({message: 'No existen usuarios'});
+        }
+        else{
+            res.status(200).send({users, total, pages: Math.ceil(total/itemsPerPage)});
+        }
+    });
+}
+
 module.exports = {
     home,
     pruebas,
     saveUser,
     loginUser,
-    getUser
+    getUser,
+    getUsers
 }
