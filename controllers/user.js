@@ -1,6 +1,8 @@
 'use strict'
 var bcrypt = require('bcrypt-nodejs');
 var mongoosePaginate = require('mongoose-pagination');
+var fs = require('fs');
+var path = require('path');
 
 var User = require('../models/user');
 var jwt = require('../services/jwt');
@@ -163,6 +165,52 @@ function updateUser(req, res){
     }
 }
 
+//Subir archivos de imagen y avatar de usuario
+function uploadImage(req, res){
+    var userId = req.params.id;
+
+    
+    if(req.files){//si esta enviando un fichero
+        var file_path = req.files.image.path;//recojemos el path de la imagen que se manda por post
+        var file_split = file_path.split('\\');//separa el path en un array que tiene [uploads, users, nombre de archivo]
+        var file_name = file_split[2];//nombre de archivo esta en la pos 2 del array
+
+        var ext_split = file_name.split('\.');//separa el nombre del [archivo, extension] en otro array
+        var file_ext = ext_split[1];//saca la extension 
+
+        if(userId != req.user.sub){//solo usuario logueado puede actualizar su imagen
+            return removeFilesOfUploads(res, file_path, 'No tienes permisos para actualizar la imagen');
+        }
+
+        if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'gif'){
+            //actulizar documento de usuario logueado
+            User.findByIdAndUpdate(userId, {image: file_name}, {new:true}, (err, userUpdated) => {
+                if(err){
+                    return res.status(500).send({message: 'Error en la peticion'});
+                }
+                else if(!userUpdated){
+                    return res.status(404).send({message: 'No se ha podido actualizar'})
+                }
+                else{
+                    return res.status(200).send({user: userUpdated});
+                }
+            });
+
+        }else{
+            return removeFilesOfUploads(res, file_path, 'Extension no valida');
+        }
+
+    }else{
+        return res.status(200).send({message: 'No se han subido imagenes'});
+    }
+}
+
+function removeFilesOfUploads(res, file_path, message){
+    fs.unlink(file_path, (err) => {//elimina el archivo que subimos
+        return res.status(200).send({message: message}); 
+    });
+}
+
 module.exports = {
     home,
     pruebas,
@@ -170,5 +218,6 @@ module.exports = {
     loginUser,
     getUser,
     getUsers,
-    updateUser
+    updateUser,
+    uploadImage
 }
