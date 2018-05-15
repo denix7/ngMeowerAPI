@@ -28,7 +28,21 @@ function saveFollow(req, res){
     })
 }
 
+//Dejar de Seguir a usuario
+function deleteFollow(req, res){
+    var userId = req.user.sub;//mandamos usuario logueado
+    var followId = req.params.id;//mandamos usuario al que dejaremos de seguir por URL
+
+    Follow.find({'user': userId, 'followed': followId}).remove(err => {
+        if(err)
+            return res.status(500).send({message: 'Error al dejar de seguir'});
+        else    
+            return res.status(200).send({message: 'El follow se ha eliminado'});    
+    })
+}
+
 module.exports = {
     prueba,
-    saveFollow
+    saveFollow,
+    deleteFollow
 }
