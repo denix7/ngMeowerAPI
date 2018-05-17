@@ -97,10 +97,32 @@ function getFollowedUsers(req, res){
     })
 }
 
+
+//Listado de usuarios que sigo y me siguen sin paginar
+function getMyFollows(req, res){
+    var userId = req.user.sub;
+    
+    var find = Follow.find({user: userId});
+
+    if(req.params.followed){
+        find = Follow.find({followed: userId});
+    }
+    
+    find.populate('user followed').exec((err, follows)=>{
+        if(err)
+            return res.status(500).send({message: 'Error en la peticion'});
+        if(!follows)
+            return res.status(404).send({message: 'No tienes seguidores'});
+            
+        return res.status(200).send({follows});      
+    });
+}
+
 module.exports = {
     prueba,
     saveFollow,
     deleteFollow,
     getFollowingUsers,
-    getFollowedUsers
+    getFollowedUsers,
+    getMyFollows
 }
