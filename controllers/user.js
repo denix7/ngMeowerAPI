@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 
 var User = require('../models/user');
+var Follow = require('../models/follow');
 var jwt = require('../services/jwt');
 //Pruebas
 function home (req, res){
@@ -110,8 +111,13 @@ function getUser(req, res){
             res.status(404).send({message: 'El usuario no existe'});
         }
         else{
-            res.status(200).send({user});
-        }
+            Follow.findOne({"user": req.user.sub, "followed": userId}).exec((err, follow)=>{
+                if(err)
+                    return res.status(500).send({message: 'Error en la peticion'});                
+                else    
+                    res.status(200).send({user, follow});
+                });
+        } 
     });
 }
 
