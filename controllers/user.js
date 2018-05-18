@@ -200,6 +200,35 @@ async function followUserIds(user_id){
     }
 }
 
+//Devolver cantidad de usuarios que me siguen y que sigo
+function getCounters(req, res){
+    var userId = req.user.sub;
+    if(req.params.id){
+        userId = req.params.id;
+    }
+
+    getCountFolow(userId).then((value) =>{
+        return res.status(200).send(value);
+    });
+    
+}
+async function getCountFolow(user_id){
+    var following = await Follow.count({"user": user_id}).exec((err, count)=>{
+        if(err) return handleError(err);
+        else return count;
+    });
+
+    var followed = await Follow.count({"followed": user_id}).exec((err, count)=>{
+        if(err) return handleError(err);
+        else return count;
+    });
+
+    return {
+        following: following,
+        followed: followed
+    }
+}
+
 //Editar datos de usuario
 function updateUser(req, res){
     var userId = req.params.id;
@@ -294,6 +323,7 @@ module.exports = {
     loginUser,
     getUser,
     getUsers,
+    getCounters,
     updateUser,
     uploadImage,
     getImageFile
