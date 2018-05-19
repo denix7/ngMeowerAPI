@@ -9,6 +9,7 @@ var multipart = require('connect-multiparty');
 var md_upload = multipart({uploadDir: './uploads/publications'});
 
 api.get('/prueba-pub', md_auth.ensureAuth, PublicationControler.probando);
-api.post('/publication', md_auth.ensureAuth, PublicationControler.savePublication)
+api.post('/publication', md_auth.ensureAuth, PublicationControler.savePublication);
+api.get('/publications/:page?', md_auth.ensureAuth, PublicationControler.getPublications);
 
 module.exports = api;
