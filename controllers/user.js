@@ -6,6 +6,7 @@ var path = require('path');
 
 var User = require('../models/user');
 var Follow = require('../models/follow');
+var Publication = require('../models/publication');
 var jwt = require('../services/jwt');
 //Pruebas
 function home (req, res){
@@ -200,7 +201,7 @@ async function followUserIds(user_id){
     }
 }
 
-//Devolver cantidad de usuarios que me siguen y que sigo
+//Devolver cantidad de usuarios que me siguen y que sigo (async/await no funciona)
 function getCounters(req, res){
     var userId = req.user.sub;
     if(req.params.id){
@@ -223,9 +224,15 @@ async function getCountFolow(user_id){
         else return count;
     });
 
+    var publications = await Publication.count({"user": user_id}).exec((err, count)=>{
+        if(err) return handleError(err);
+        return count;
+    });
+
     return {
         following: following,
-        followed: followed
+        followed: followed,
+        publications: Publication
     }
 }
 
