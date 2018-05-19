@@ -12,5 +12,6 @@ api.get('/prueba-pub', md_auth.ensureAuth, PublicationControler.probando);
 api.post('/publication', md_auth.ensureAuth, PublicationControler.savePublication);
 api.get('/publications/:page?', md_auth.ensureAuth, PublicationControler.getPublications);
 api.get('/publication/:id', md_auth.ensureAuth, PublicationControler.getPublication);
+api.delete('/publication-delete/:id', md_auth.ensureAuth, PublicationControler.deletePublication);
 
 module.exports = api;
