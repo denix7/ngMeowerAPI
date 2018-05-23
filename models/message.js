@@ -1,6 +1,6 @@
 'use strict'
 
-var mongoose = require('mogoose');
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var MessageSchema = Schema({
