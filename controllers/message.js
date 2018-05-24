@@ -89,7 +89,18 @@ function getUnviewedMessages(req, res){
             return res.status(500).send({message: 'Error en la peticion'});
         else    
             return res.status(200).send({'unviewed': count}); 
-    })
+    });
+}
+
+function setViewedMessages(req, res){
+    userId = req.user.sub;
+
+    Message.update({receiver: userId, viewed:'false'}, {viewed: 'true'}, {"multi":true}, (err, messagesUpdated)=>{//cual actualizar, el valor a actualizar, multi actualiza todos los documentos, callback
+        if(err)
+            return res.status(500).send({message: 'Error en la peticion'});
+        else    
+            return res.status(200).send({messages: messagesUpdated});     
+    });
 }
 
 module.exports = {
@@ -97,5 +108,6 @@ module.exports = {
     saveMessage,
     getReceivedMessages,
     getEmittMessages,
-    getUnviewedMessages
+    getUnviewedMessages,
+    setViewedMessages
 }
