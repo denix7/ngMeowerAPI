@@ -20,7 +20,8 @@ function saveMessage(req, res){
     message.emmiter = req.user.sub;
     message.receiver = params.receiver;
     message.text = params.text;
-    message.created_at = moment().unix();  
+    message.created_at = moment().unix();
+    message.viewed = 'false';  
     
     message.save((err, messageStored)=>{
         if(err)
@@ -80,9 +81,21 @@ function getEmittMessages(req, res){
     })
 }
 
+function getUnviewedMessages(req, res){
+    userId = req.user.sub;
+
+    Message.count({receiver: userId, viewed: 'false'}).exec((err, count)=>{
+        if(err)
+            return res.status(500).send({message: 'Error en la peticion'});
+        else    
+            return res.status(200).send({'unviewed': count}); 
+    })
+}
+
 module.exports = {
     probandoMessage,
     saveMessage,
     getReceivedMessages,
-    getEmittMessages
+    getEmittMessages,
+    getUnviewedMessages
 }
