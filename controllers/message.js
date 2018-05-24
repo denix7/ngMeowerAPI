@@ -32,7 +32,32 @@ function saveMessage(req, res){
     })
 }
 
+function getReceivedMessages(req, res){
+    userId = req.user.sub;
+
+    var page = 1;
+
+    if(req.params.page)
+        page = req.params.page;
+
+    itemsPerPage = 4;
+    
+    Message.find({receiver: userId}).populate('emmiter').paginate(page, itemsPerPage, (err, messages, total) => {
+        if(err)
+            return res.status(500).send({message: 'Error en la peticion'});
+        else if(!messages)
+            return res.status(404).send({message: 'No existen mensajes'});
+        else    
+            return res.status(200).send({
+                total: total,
+                pages: Math.ceil(total/itemsPerPage),
+                messages
+            });        
+    })
+}
+
 module.exports = {
     probandoMessage,
-    saveMessage
+    saveMessage,
+    getReceivedMessages
 }
